@@ -22,7 +22,7 @@ public class Methods{
 			if(banker[0].isClickable(MODEL_CLICKING_METHOD.CENTRE)){
 				Mouse.setSpeed(RS3VarrokMiner.mouseSpeed);
 				General.sleep(500, 700);
-				if(RandomizedClicking.clickScreenModel(banker1, -4, 8, -4, 6)){
+				if(RandomizedClicking.clickScreenModel(banker1, "Bank", -4, 8, -4, 6)){
 					Timing.waitCondition(new Condition() {
 						public boolean active() {
 							return Banking.isBankScreenOpen();

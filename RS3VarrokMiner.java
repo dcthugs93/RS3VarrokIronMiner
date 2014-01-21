@@ -29,7 +29,6 @@ public class RS3VarrokMiner extends EnumScript<RS3VarrokMiner.STATE> implements 
 
 	public static 					Font font = AddFont.createFont();
 	private final 					Color color = new Color(0,0,0);
-	private static				    EGWPosition PlayerPOS = EGW.getPosition();
 	public static final 			EGWPosition Bank_Pos = new EGWPosition (3253, 3421, 0),
 									Mine_Pos = new EGWPosition (3285, 3370, 0);
 	public static final long[] 		banker = {3167445700L},
@@ -37,7 +36,8 @@ public class RS3VarrokMiner extends EnumScript<RS3VarrokMiner.STATE> implements 
 	public static final int[] 		loginScreen = {21234, 46069};
 	public static final int 		inventoryFull = 24078;
 	public static int 				mouseSpeed = General.random(65, 155),
-									ironOres = 0;
+									ironOres = 0,
+									ironOre = 1044836;
 	private static final long 		startTime = System.currentTimeMillis();
 	private static 					String Status = "";
 	
@@ -64,7 +64,9 @@ public class RS3VarrokMiner extends EnumScript<RS3VarrokMiner.STATE> implements 
 		switch (t)
 		{
 			case CHECK:
-			ScreenModel[] iron = ScreenModels.findNearest(ironRocks);  
+			ScreenModel[] iron = ScreenModels.findNearest(ironRocks);
+			EGWPosition PlayerPOS = EGW.getPosition();			
+			General.println("" + PlayerPOS);
 
 			try {
 				if (font == null) {
@@ -75,58 +77,59 @@ public class RS3VarrokMiner extends EnumScript<RS3VarrokMiner.STATE> implements 
            }
 			if(loggedOut()){ 	
 				Restarter.restartClient(); 
-			}
-			if(PlayerPOS.distance(Mine_Pos) > 10 && !inventoryIsFull()){
-				Status = "Walking to Iron Rocks";
-				return STATE.WALK_TO_IRON;
-			}
-			if(PlayerPOS.distance(Mine_Pos) < 10 && iron.length > 0 && !inventoryIsFull()) {
-				Status = "Mining Iron";
-				return STATE.MINE_IRON;
-			}
+			}else
 			if(inventoryIsFull()){
 				if(PlayerPOS.distance(Bank_Pos) < 6){
 					Status = "Depositing Iron Ore";
 					return STATE.BANK;
-				}
-				if(PlayerPOS.distance(Bank_Pos) > 15){
+				} else
+				if(PlayerPOS.distance(Bank_Pos) > 6){
 					Status = "Walking To Bank";
 					return STATE.WALK_TO_BANK;
-				}
-			}					
+				}					
+			}else
+			if(PlayerPOS.distance(Mine_Pos) > 10 && !inventoryIsFull()){
+				Status = "Walking to Iron Rocks";
+				return STATE.WALK_TO_IRON;
+			}else
+			if(PlayerPOS.distance(Mine_Pos) < 10 && iron.length > 0 && !inventoryIsFull()) {
+				Status = "Mining Iron";
+				return STATE.MINE_IRON;
+			}			
 			
 			case MINE_IRON:
-			if(PlayerPOS.distance(Mine_Pos) < 8){
+			EGWPosition PlayerPOS4 = EGW.getPosition();
+			if(PlayerPOS4.distance(Mine_Pos) < 8 && !inventoryIsFull()){
 					MineIron.mineIron();
-					if(!inventoryIsFull()){
-						return STATE.MINE_IRON;
-					}
+					return STATE.MINE_IRON;
 			}
 			return STATE.CHECK;
 			
 			case WALK_TO_BANK:
-			if(PlayerPOS.distance(Bank_Pos) > 6){
+			EGWPosition PlayerPOS2 = EGW.getPosition();
+			if(PlayerPOS2.distance(Bank_Pos) > 6){
 				WalkingMethods.walkToBank();
-			}
-			if(PlayerPOS.distance(Bank_Pos) <= 6){
+			}else
+			if(PlayerPOS2.distance(Bank_Pos) <= 6){
 				return STATE.BANK;
 			}
 			return STATE.WALK_TO_BANK;
 			
 			case BANK:
-			while(Backpack.find(ironOres).length >= 1){
+			while(Backpack.find(ironOre).length > 0){
 				Methods.bank();
 			} 
 			return STATE.WALK_TO_IRON;
 			
 			case WALK_TO_IRON:
-			if(PlayerPOS.distance(Mine_Pos) > 6){
+			EGWPosition PlayerPOS3 = EGW.getPosition();
+			if(PlayerPOS3.distance(Mine_Pos) > 6){
 				WalkingMethods.walkToMine();
-			}
-			if(PlayerPOS.distance(Mine_Pos) <= 6){
+			}else
+			if(PlayerPOS3.distance(Mine_Pos) <= 6){
 				return STATE.MINE_IRON;
 			}
-			return STATE.WALK_TO_IRON;			
+			break;		
 
 		}
 		return STATE.CHECK;

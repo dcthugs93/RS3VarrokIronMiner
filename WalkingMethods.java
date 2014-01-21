@@ -26,7 +26,7 @@ public class WalkingMethods{
 	
 	public static void walkToBank()  {
 	
-		if(PlayerPOS.distance(RS3VarrokMiner.Bank_Pos) > 3){
+		if(PlayerPOS.distance(RS3VarrokMiner.Bank_Pos) > 4){
 			WebWalking.walkTo(RS3VarrokMiner.Bank_Pos);
 			General.println("Walking to Bank");
             Timing.waitCondition(new Condition() {
